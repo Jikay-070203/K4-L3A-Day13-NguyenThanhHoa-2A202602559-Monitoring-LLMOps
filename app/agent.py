@@ -23,6 +23,16 @@ class AgentResult:
     quality_score: float
 
 
+@observe(name="retrieval", as_type="retriever", capture_input=False, capture_output=False)
+def _retrieve_for_trace(message: str):
+    return retrieve(message)
+
+
+@observe(name="llm-generation", as_type="generation", capture_input=False, capture_output=False)
+def _generate_for_trace(llm: FakeLLM, prompt_text: str):
+    return llm.generate(prompt_text)
+
+
 class LabAgent:
     def __init__(self, model: str = "claude-sonnet-4-5") -> None:
         self.model = model
@@ -51,7 +61,7 @@ class LabAgent:
             },
         ):
             started = time.perf_counter()
-            docs = retrieve(message)
+            docs = _retrieve_for_trace(message)
             prompt = resolve_prompt(
                 langfuse_client,
                 feature=feature,
@@ -74,7 +84,24 @@ class LabAgent:
             # TODO (CP2): instrument retrieve() and FakeLLM.generate() as child
             # observations. The nested generation must receive prompt, usage and cost.
             with propagate_attributes(prompt=prompt.managed_prompt):
-                response = self.llm.generate(prompt.text)
+                response = _generate_for_trace(self.llm, prompt.text)
+                if hasattr(langfuse_client, "update_current_generation"):
+                    langfuse_client.update_current_generation(
+                        model=self.model,
+                        usage_details={
+                            "input": response.usage.input_tokens,
+                            "output": response.usage.output_tokens,
+                            "total": response.usage.input_tokens + response.usage.output_tokens,
+                        },
+                        cost_details={
+                            "input": (response.usage.input_tokens / 1_000_000) * 3,
+                            "output": (response.usage.output_tokens / 1_000_000) * 15,
+                            "total": self._estimate_cost(
+                                response.usage.input_tokens,
+                                response.usage.output_tokens,
+                            ),
+                        },
+                    )
             quality_score = self._heuristic_quality(message, response.text, docs)
             latency_ms = int((time.perf_counter() - started) * 1000)
             cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)

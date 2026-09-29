@@ -1,0 +1,40 @@
+{
+  "cohort": "K4",
+  "challenge_id": "day13-k4-l3a-monitoring-llmops-v1",
+  "incident": "rag_slow",
+  "seed": 1311,
+  "affected_feature": "monitoring",
+  "latency_threshold_ms": 2000,
+  "queries": [
+    {
+      "user_id": "k4-l3a-u01",
+      "session_id": "k4-l3a-challenge-s01",
+      "feature": "monitoring",
+      "message": "Explain why metrics traces and logs work together."
+    },
+    {
+      "user_id": "k4-l3a-u02",
+      "session_id": "k4-l3a-challenge-s02",
+      "feature": "monitoring",
+      "message": "How should an engineer investigate tail latency?"
+    },
+    {
+      "user_id": "k4-l3a-u03",
+      "session_id": "k4-l3a-challenge-s03",
+      "feature": "monitoring",
+      "message": "Summarize the observability workflow for an AI API."
+    },
+    {
+      "user_id": "k4-l3a-u04",
+      "session_id": "k4-l3a-challenge-s04",
+      "feature": "monitoring",
+      "message": "Which signal should be checked after latency increases?"
+    },
+    {
+      "user_id": "k4-l3a-u05",
+      "session_id": "k4-l3a-challenge-s05",
+      "feature": "monitoring",
+      "message": "Describe how to prove a slow span is the root cause."
+    }
+  ]
+}

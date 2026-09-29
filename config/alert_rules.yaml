@@ -1,25 +1,25 @@
 alerts:
-  - name: TODO_alert_1
-    severity: TODO
-    condition: TODO
-    duration: TODO
+  - name: high_latency_burn
+    severity: critical
+    condition: p95_latency_ms > 3000 or fast_successful_requests_slo_burn_rate > 2
+    duration: 10m
     type: symptom-based
     channel: slack
-    owner: TODO
+    owner: platform-oncall
     runbook: docs/alerts.md#alert-1
-  - name: TODO_alert_2
-    severity: TODO
-    condition: TODO
-    duration: TODO
+  - name: elevated_error_rate
+    severity: critical
+    condition: error_rate_pct > 2
+    duration: 5m
     type: symptom-based
     channel: slack
-    owner: TODO
+    owner: api-oncall
     runbook: docs/alerts.md#alert-2
-  - name: TODO_alert_3
-    severity: TODO
-    condition: TODO
-    duration: TODO
+  - name: retrieval_degradation
+    severity: warning
+    condition: retrieval_success_rate_pct < 90
+    duration: 10m
     type: symptom-based
     channel: slack
-    owner: TODO
+    owner: ml-platform
     runbook: docs/alerts.md#alert-3
